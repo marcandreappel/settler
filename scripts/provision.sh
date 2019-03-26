@@ -199,28 +199,28 @@ EOF
 
 # Set The Nginx & PHP-FPM User
 
-sed -i "s/user www-data;/user vagrant;/" /etc/nginx/nginx.conf
+sed -i "s/user www-data;/user $USER;/" /etc/nginx/nginx.conf
 sed -i "s/# server_names_hash_bucket_size.*/server_names_hash_bucket_size 64;/" /etc/nginx/nginx.conf
 
-sed -i "s/user = www-data/user = vagrant/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/group = www-data/group = vagrant/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/user = www-data/user = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
 
-sed -i "s/listen\.owner.*/listen.owner = vagrant/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/listen\.group.*/listen.group = vagrant/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/listen\.owner.*/listen.owner = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.3/fpm/pool.d/www.conf
 
-sed -i "s/user = www-data/user = vagrant/" /etc/php/7.2/fpm/pool.d/www.conf
-sed -i "s/group = www-data/group = vagrant/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/user = www-data/user = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
 
-sed -i "s/listen\.owner.*/listen.owner = vagrant/" /etc/php/7.2/fpm/pool.d/www.conf
-sed -i "s/listen\.group.*/listen.group = vagrant/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/listen\.owner.*/listen.owner = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
 sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.2/fpm/pool.d/www.conf
 
-sed -i "s/user = www-data/user = vagrant/" /etc/php/7.1/fpm/pool.d/www.conf
-sed -i "s/group = www-data/group = vagrant/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/user = www-data/user = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
 
-sed -i "s/listen\.owner.*/listen.owner = vagrant/" /etc/php/7.1/fpm/pool.d/www.conf
-sed -i "s/listen\.group.*/listen.group = vagrant/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/listen\.owner.*/listen.owner = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
 sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.1/fpm/pool.d/www.conf
 
 service nginx restart
@@ -228,20 +228,11 @@ service php7.2-fpm restart
 service php7.3-fpm restart
 service php7.1-fpm restart
 
-# Add Vagrant User To WWW-Data
+# Add User To WWW-Data
 
-usermod -a -G www-data vagrant
-id vagrant
-groups vagrant
-
-# Install Node
-
-apt-get install -y nodejs
-/usr/bin/npm install -g npm
-/usr/bin/npm install -g gulp-cli
-/usr/bin/npm install -g bower
-/usr/bin/npm install -g yarn
-/usr/bin/npm install -g grunt-cli
+usermod -a -G www-data $USER
+id $USER
+groups $USER
 
 # Install SQLite
 
@@ -263,13 +254,13 @@ sed -i '/^bind-address/s/bind-address.*=.*/bind-address = 0.0.0.0/' /etc/mysql/m
 mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO root@'0.0.0.0' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
 service mysql restart
 
-mysql --user="root" --password="secret" -e "CREATE USER 'homestead'@'0.0.0.0' IDENTIFIED BY 'secret';"
-mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO 'homestead'@'0.0.0.0' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
-mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO 'homestead'@'%' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
+mysql --user="root" --password="secret" -e "CREATE USER '$USER'@'0.0.0.0' IDENTIFIED BY 'secret';"
+mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO '$USER'@'0.0.0.0' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
+mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO '$USER'@'%' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
 mysql --user="root" --password="secret" -e "FLUSH PRIVILEGES;"
-mysql --user="root" --password="secret" -e "CREATE DATABASE homestead character set UTF8mb4 collate utf8mb4_bin;"
+mysql --user="root" --password="secret" -e "CREATE DATABASE $USER character set UTF8mb4 collate utf8mb4_bin;"
 
-sudo tee /home/vagrant/.my.cnf <<EOL
+sudo tee /home/$USER/.my.cnf <<EOL
 [mysqld]
 character-set-server=utf8mb4
 collation-server=utf8mb4_bin
@@ -281,26 +272,9 @@ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql --user=root --password=secret my
 
 service mysql restart
 
-# Install Postgres
-
-apt-get install -y postgresql-10
-
-# Configure Postgres Remote Access
-
-sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /etc/postgresql/10/main/postgresql.conf
-echo "host    all             all             10.0.2.2/32               md5" | tee -a /etc/postgresql/10/main/pg_hba.conf
-sudo -u postgres psql -c "CREATE ROLE homestead LOGIN PASSWORD 'secret' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
-sudo -u postgres /usr/bin/createdb --echo --owner=homestead homestead
-service postgresql restart
-
 # Install Blackfire
 
 apt-get install -y blackfire-agent blackfire-php
-
-# Install Zend Z-Ray (for FPM only, not CLI)
-
-sudo wget http://repos.zend.com/zend-server/early-access/ZRay-Homestead/zray-standalone-php72.tar.gz -O - | sudo tar -xzf - -C /opt
-sudo chown -R vagrant:vagrant /opt/zray
 
 # Install The Chrome Web Driver & Dusk Utilities
 
@@ -345,41 +319,11 @@ systemctl enable mailhog
 systemctl enable supervisor.service
 service supervisor start
 
-# Install Crystal Programming Language Support
-#apt-key adv --keyserver hkp://keys.gnupg.net:80 --recv-keys 09617FD37CC06B54
-#echo "deb https://dist.crystal-lang.org/apt crystal main" | tee /etc/apt/sources.list.d/crystal.list
-#apt-get update
-#apt-get install -y crystal
-
-# Install Lucky Framework for Crystal
-
-#wget https://github.com/luckyframework/lucky_cli/archive/v0.11.0.tar.gz
-#tar -zxvf v0.11.0.tar.gz
-#cd lucky_cli-0.11.0
-#shards install
-#crystal build src/lucky.cr --release --no-debug
-#mv lucky /usr/local/bin/.
-#cd /home/vagrant
-#rm -rf lucky_cli-0.11.0
-#rm -rf v0.11.0.tar.gz
-
-# Install Heroku CLI
-
-curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
-
 # Install ngrok
 
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
 unzip ngrok-stable-linux-amd64.zip -d /usr/local/bin
 rm -rf ngrok-stable-linux-amd64.zip
-
-# Install Flyway
-
-wget https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/4.2.0/flyway-commandline-4.2.0-linux-x64.tar.gz
-tar -zxvf flyway-commandline-4.2.0-linux-x64.tar.gz -C /usr/local
-chmod +x /usr/local/flyway-4.2.0/flyway
-ln -s /usr/local/flyway-4.2.0/flyway /usr/local/bin/flyway
-rm -rf flyway-commandline-4.2.0-linux-x64.tar.gz
 
 # Install wp-cli
 
@@ -387,122 +331,13 @@ curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.pha
 chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
-# Install Drush Launcher.
-
-curl --silent --location https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar --output drush.phar
-chmod +x drush.phar
-mv drush.phar /usr/local/bin/drush
-drush self-update
-
-# Install Drupal Console Launcher.
-
-curl --silent --location https://drupalconsole.com/installer --output drupal.phar
-chmod +x drupal.phar
-mv drupal.phar /usr/local/bin/drupal
-
-# Install oh-my-zsh
-
-git clone git://github.com/robbyrussell/oh-my-zsh.git /home/vagrant/.oh-my-zsh
-cp /home/vagrant/.oh-my-zsh/templates/zshrc.zsh-template /home/vagrant/.zshrc
-printf "\nsource ~/.bash_aliases\n" | tee -a /home/vagrant/.zshrc
-printf "\nsource ~/.profile\n" | tee -a /home/vagrant/.zshrc
-chown -R vagrant:vagrant /home/vagrant/.oh-my-zsh
-chown vagrant:vagrant /home/vagrant/.zshrc
-
-# Install Golang
-
-golangVersion="1.12.1"
-wget https://dl.google.com/go/go${golangVersion}.linux-amd64.tar.gz -O golang.tar.gz
-tar -C /usr/local -xzf golang.tar.gz go
-printf "\nPATH=\"/usr/local/go/bin:\$PATH\"\n" | tee -a /home/vagrant/.profile
-rm -rf golang.tar.gz
-
-# Install & Configure Postfix]
-
-echo "postfix postfix/mailname string homestead.test" | debconf-set-selections
-echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
-apt-get install -y postfix
-sed -i "s/relayhost =/relayhost = [localhost]:1025/g" /etc/postfix/main.cf
-/etc/init.d/postfix reload
-
-# Install .net core
-
-wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
-sudo dpkg -i packages-microsoft-prod.deb
-
-sudo apt-get -y install apt-transport-https
-sudo apt-get update
-sudo apt-get -y install dotnet-sdk-2.1
-sudo rm -rf packages-microsoft-prod.deb
-
-# Update / Override motd
-
-sed -i "s/motd.ubuntu.com/homestead.joeferguson.me/g" /etc/default/motd-news
-rm -rf /etc/update-motd.d/10-help-text
-rm -rf /etc/update-motd.d/50-landscape-sysinfo
-service motd-news restart
-
-# Install Ruby & RVM
-
-apt-get -y install libssl-dev libyaml-dev libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common \
-libffi-dev rbenv
-
-git clone https://github.com/rbenv/rbenv.git /home/vagrant/.rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> /home/vagrant/.bashrc
-echo 'eval "$(rbenv init -)"' >> /home/vagrant/.bashrc
-
-git clone https://github.com/rbenv/ruby-build.git /home/vagrant/.rbenv/plugins/ruby-build
-echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> /home/vagrant/.bashrc
-
-rbenv install 2.6.1
-rbenv global 2.6.1
-apt-get -y install ruby`ruby -e 'puts RUBY_VERSION[/\d+\.\d+/]'`-dev
-gem install rails -v 5.2.2
-rbenv rehash
-
-# Install socket-wrench Repo
-#
-#mysql --user="root" --password="secret" -e "CREATE DATABASE socket_wrench character set UTF8mb4 collate utf8mb4_bin;"
-#cd /var/www
-#git clone -b release https://github.com/svpernova09/socket-wrench.git
-#chown vagrant:vagrant /var/www/socket-wrench
-#chmod -R 777 /var/www/socket-wrench/storage
-#chmod -R 777 /var/www/socket-wrench/bootstrap
-#cp /var/www/socket-wrench/.env.example /var/www/socket-wrench/.env
-#/usr/bin/php /var/www/socket-wrench/artisan key:generate
-#/usr/bin/php /var/www/socket-wrench/artisan migrate
-#/usr/bin/php /var/www/socket-wrench/artisan db:seed
-#
-#sudo tee /etc/supervisor/conf.d/socket-wrench.conf <<EOL
-#[program:socket-wrench]
-#command=/usr/bin/php /var/www/socket-wrench/artisan websockets:serve
-#numprocs=1
-#autostart=true
-#autorestart=true
-#user=vagrant
-#EOL
-#
-#supervisorctl update
-#supervisorctl start socket-wrench
-
-# One last upgrade check
-
 apt-get -y upgrade
 
 # Clean Up
 
 apt-get -y autoremove
 apt-get -y clean
-chown -R vagrant:vagrant /home/vagrant
-#chown -R vagrant:vagrant /var/www/socket-wrench
-chown -R vagrant:vagrant /usr/local/bin
 
 # Add Composer Global Bin To Path
 
-printf "\nPATH=\"$(sudo su - vagrant -c 'composer config -g home 2>/dev/null')/vendor/bin:\$PATH\"\n" | tee -a /home/vagrant/.profile
-
-# Enable Swap Memory
-
-/bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
-/sbin/mkswap /var/swap.1
-/sbin/swapon /var/swap.1
+printf "\nPATH=\"$(sudo su - vagrant -c 'composer config -g home 2>/dev/null')/vendor/bin:\$PATH\"\n" | tee -a /home/$USER/.profile
