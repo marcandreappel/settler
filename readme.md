@@ -1,4 +1,4 @@
-# Ubuntu PHP Developper Environnement
+# Ubuntu PHP
 
 ## Usage :
 
