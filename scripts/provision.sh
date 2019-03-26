@@ -1,25 +1,11 @@
 #!/usr/bin/env bash
 
-export DEBIAN_FRONTEND=noninteractive
-
-# Update Package List
-
-apt-get update
-
-# Update System Packages
-apt-get -y upgrade
-
-# Force Locale
-
-echo "LC_ALL=en_US.UTF-8" >> /etc/default/locale
-locale-gen en_US.UTF-8
-
 # Install Some PPAs
 
 apt-get install -y software-properties-common curl
 
-apt-add-repository ppa:nginx/development -y
-#apt-add-repository ppa:chris-lea/redis-server -y
+#apt-add-repository ppa:nginx/development -y
+apt-add-repository ppa:chris-lea/redis-server -y
 apt-add-repository ppa:ondrej/php -y
 
 #curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
@@ -35,7 +21,7 @@ apt-add-repository ppa:ondrej/php -y
 wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add -
 echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list
 
-curl --silent --location https://deb.nodesource.com/setup_10.x | bash -
+#curl --silent --location https://deb.nodesource.com/setup_10.x | bash -
 
 # Update Package Lists
 apt-get update
@@ -43,12 +29,10 @@ apt-get update
 # Install Some Basic Packages
 
 apt-get install -y build-essential dos2unix gcc git libmcrypt4 libpcre3-dev libpng-dev ntp unzip \
-make python2.7-dev python-pip re2c supervisor unattended-upgrades whois vim libnotify-bin \
-pv cifs-utils mcrypt bash-completion zsh graphviz avahi-daemon
+make python2.7-dev python-pip re2c supervisor unattended-upgrades whois libnotify-bin \
+pv cifs-utils mcrypt graphviz avahi-daemon
 
 # Set My Timezone
-
-ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
 # Install PHP Stuffs
 # Current PHP
@@ -90,12 +74,8 @@ mv composer.phar /usr/local/bin/composer
 
 # Install Laravel Envoy, Installer, and prestissimo for parallel downloads
 
-sudo su vagrant <<'EOF'
+sudo su $USER <<'EOF'
 /usr/local/bin/composer global require hirak/prestissimo
-/usr/local/bin/composer global require "laravel/envoy=~1.0"
-/usr/local/bin/composer global require "laravel/installer=~2.0"
-/usr/local/bin/composer global require "laravel/lumen-installer=~1.0"
-/usr/local/bin/composer global require "laravel/spark-installer=~2.0"
 EOF
 
 # Set Some PHP CLI Settings
@@ -123,9 +103,9 @@ rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
 
 # Create a configuration file for Nginx overrides.
-sudo mkdir -p /home/vagrant/.config/nginx
-sudo chown -R vagrant:vagrant /home/vagrant
-touch /home/vagrant/.config/nginx/nginx.conf
+sudo mkdir -p /home/$USER/.config/nginx
+
+touch /home/$USER/.config/nginx/nginx.conf
 sudo ln -sf /home/vagrant/.config/nginx/nginx.conf /etc/nginx/conf.d/nginx.conf
 
 # Setup Some PHP-FPM Options
