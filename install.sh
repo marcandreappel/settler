@@ -2,33 +2,21 @@
 
 # Install Some PPAs
 
-apt-get install -y software-properties-common curl
+apt install -y software-properties-common curl
 
-#apt-add-repository ppa:nginx/development -y
+apt-add-repository ppa:nginx/development -y
 apt-add-repository ppa:chris-lea/redis-server -y
 apt-add-repository ppa:ondrej/php -y
-
-#curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-#curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
-
-# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-# apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 5072E1F5
-# sh -c 'echo "deb http://repo.mysql.com/apt/ubuntu/ xenial mysql-5.7" >> /etc/apt/sources.list.d/mysql.list'
-
-#echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' >> /etc/apt/sources.list.d/pgdg.list
-#wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
 wget -q -O - https://packages.blackfire.io/gpg.key | apt-key add -
 echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list
 
-#curl --silent --location https://deb.nodesource.com/setup_10.x | bash -
-
 # Update Package Lists
-apt-get update
+apt update
 
 # Install Some Basic Packages
 
-apt-get install -y build-essential dos2unix gcc git libmcrypt4 libpcre3-dev libpng-dev ntp unzip \
+apt install -y build-essential dos2unix gcc git libmcrypt4 libpcre3-dev libpng-dev ntp unzip \
 make python2.7-dev python-pip re2c supervisor unattended-upgrades whois libnotify-bin \
 pv cifs-utils mcrypt graphviz avahi-daemon
 
@@ -36,7 +24,7 @@ pv cifs-utils mcrypt graphviz avahi-daemon
 
 # Install PHP Stuffs
 # Current PHP
-apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+apt install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
 php7.3-cli php7.3-dev \
 php7.3-pgsql php7.3-sqlite3 php7.3-gd \
 php7.3-curl \
@@ -45,7 +33,7 @@ php7.3-xml php7.3-zip php7.3-bcmath php7.3-soap \
 php7.3-intl php7.3-readline
 
 # PHP 7.2
-apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+apt install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
 php7.2-cli php7.2-dev \
 php7.2-pgsql php7.2-sqlite3 php7.2-gd \
 php7.2-curl php7.2-memcached \
@@ -55,7 +43,7 @@ php7.2-intl php7.2-readline php7.2-ldap \
 php-xdebug php-pear
 
 # PHP 7.1
-apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+apt install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
 php7.1-cli php7.1-dev \
 php7.1-pgsql php7.1-sqlite3 php7.1-gd \
 php7.1-curl php7.1-memcached \
@@ -68,45 +56,44 @@ update-alternatives --set php-config /usr/bin/php-config7.3
 update-alternatives --set phpize /usr/bin/phpize7.3
 
 # Install Composer
-
 curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
 # Install Laravel Envoy, Installer, and prestissimo for parallel downloads
 
-sudo su $USER <<'EOF'
+sudo su $(logname) <<'EOF'
 /usr/local/bin/composer global require hirak/prestissimo
 EOF
 
 # Set Some PHP CLI Settings
-sudo sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.2/cli/php.ini
-sudo sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.2/cli/php.ini
-sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.2/cli/php.ini
-sudo sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.2/cli/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.2/cli/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.2/cli/php.ini
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.2/cli/php.ini
+sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.2/cli/php.ini
 
-sudo sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.3/cli/php.ini
-sudo sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.3/cli/php.ini
-sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.3/cli/php.ini
-sudo sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.3/cli/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.3/cli/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.3/cli/php.ini
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.3/cli/php.ini
+sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.3/cli/php.ini
 
-sudo sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.1/cli/php.ini
-sudo sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.1/cli/php.ini
-sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.1/cli/php.ini
-sudo sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.1/cli/php.ini
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.1/cli/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.1/cli/php.ini
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.1/cli/php.ini
+sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.1/cli/php.ini
 
 # Install Nginx & PHP-FPM
-
-apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+apt install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
 nginx php7.1-fpm php7.3-fpm php7.2-fpm
 
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
 
 # Create a configuration file for Nginx overrides.
-sudo mkdir -p /home/$USER/.config/nginx
-
-touch /home/$USER/.config/nginx/nginx.conf
-sudo ln -sf /home/vagrant/.config/nginx/nginx.conf /etc/nginx/conf.d/nginx.conf
+sudo su $(logname) <<'EOF'
+	mkdir -p $HOME/.config/nginx
+	touch $HOME/.config/nginx/nginx.conf
+EOF
+ln -sf $HOME/.config/nginx/nginx.conf /etc/nginx/conf.d/nginx.conf
 
 # Setup Some PHP-FPM Options
 echo "xdebug.remote_enable = 1" >> /etc/php/7.3/mods-available/xdebug.ini
@@ -170,12 +157,10 @@ printf "[curl]\n" | tee -a /etc/php/7.1/fpm/php.ini
 printf "curl.cainfo = /etc/ssl/certs/ca-certificates.crt\n" | tee -a /etc/php/7.1/fpm/php.ini
 
 # Disable XDebug On The CLI
-
-sudo phpdismod -s cli xdebug
+phpdismod -s cli xdebug
 
 # Copy fastcgi_params to Nginx because they broke it on the PPA
-
-cat > /etc/nginx/fastcgi_params << EOF
+cat > /etc/nginx/fastcgi_params <<'EOF'
 fastcgi_param	QUERY_STRING		\$query_string;
 fastcgi_param	REQUEST_METHOD		\$request_method;
 fastcgi_param	CONTENT_TYPE		\$content_type;
@@ -199,49 +184,46 @@ EOF
 
 # Set The Nginx & PHP-FPM User
 
-sed -i "s/user www-data;/user $USER;/" /etc/nginx/nginx.conf
+sed -i "s/user www-data;/user $SUDO_USER;/" /etc/nginx/nginx.conf
+sed -i "s/user root;/user $SUDO_USER;/" /etc/nginx/nginx.conf
 sed -i "s/# server_names_hash_bucket_size.*/server_names_hash_bucket_size 64;/" /etc/nginx/nginx.conf
 
-sed -i "s/user = www-data/user = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/group = www-data/group = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/user = www-data/user = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
 
-sed -i "s/listen\.owner.*/listen.owner = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/listen\.group.*/listen.group = $USER/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/listen\.owner.*/listen.owner = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.3/fpm/pool.d/www.conf
 
-sed -i "s/user = www-data/user = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
-sed -i "s/group = www-data/group = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/user = www-data/user = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
 
-sed -i "s/listen\.owner.*/listen.owner = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
-sed -i "s/listen\.group.*/listen.group = $USER/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/listen\.owner.*/listen.owner = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
 sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.2/fpm/pool.d/www.conf
 
-sed -i "s/user = www-data/user = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
-sed -i "s/group = www-data/group = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/user = www-data/user = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
 
-sed -i "s/listen\.owner.*/listen.owner = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
-sed -i "s/listen\.group.*/listen.group = $USER/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/listen\.owner.*/listen.owner = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
 sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.1/fpm/pool.d/www.conf
 
-service nginx restart
-service php7.2-fpm restart
-service php7.3-fpm restart
-service php7.1-fpm restart
+systemctl restart nginx.service
+systemctl restart php7.1-fpm.service
+systemctl restart php7.2-fpm.service
+systemctl restart php7.3-fpm.service
 
 # Add User To WWW-Data
-
-usermod -a -G www-data $USER
-id $USER
-groups $USER
+usermod -a -G www-data $(logname)
 
 # Install SQLite
-
-apt-get install -y sqlite3 libsqlite3-dev
+apt install -y sqlite3 libsqlite3-dev
 
 # Install MySQL
 echo "mysql-server mysql-server/root_password password secret" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password secret" | debconf-set-selections
-apt-get install -y mysql-server
+apt install -y mysql-server
 
 # Configure MySQL Password Lifetime
 
@@ -254,13 +236,13 @@ sed -i '/^bind-address/s/bind-address.*=.*/bind-address = 0.0.0.0/' /etc/mysql/m
 mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO root@'0.0.0.0' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
 service mysql restart
 
-mysql --user="root" --password="secret" -e "CREATE USER '$USER'@'0.0.0.0' IDENTIFIED BY 'secret';"
-mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO '$USER'@'0.0.0.0' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
-mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO '$USER'@'%' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
+mysql --user="root" --password="secret" -e "CREATE USER '$(logname)'@'0.0.0.0' IDENTIFIED BY 'secret';"
+mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO '$(logname)'@'0.0.0.0' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
+mysql --user="root" --password="secret" -e "GRANT ALL ON *.* TO '$(logname)'@'%' IDENTIFIED BY 'secret' WITH GRANT OPTION;"
 mysql --user="root" --password="secret" -e "FLUSH PRIVILEGES;"
-mysql --user="root" --password="secret" -e "CREATE DATABASE $USER character set UTF8mb4 collate utf8mb4_bin;"
+mysql --user="root" --password="secret" -e "CREATE DATABASE $(logname) character set UTF8mb4 collate utf8mb4_bin;"
 
-sudo tee /home/$USER/.my.cnf <<EOL
+sudo tee /home/$(logname)/.my.cnf <<'EOL'
 [mysqld]
 character-set-server=utf8mb4
 collation-server=utf8mb4_bin
@@ -274,19 +256,11 @@ service mysql restart
 
 # Install Blackfire
 
-apt-get install -y blackfire-agent blackfire-php
-
-# Install The Chrome Web Driver & Dusk Utilities
-
-apt-get -y install libxpm4 libxrender1 libgtk2.0-0 \
-libnss3 libgconf-2-4 chromium-browser \
-xvfb gtk2-engines-pixbuf xfonts-cyrillic \
-xfonts-100dpi xfonts-75dpi xfonts-base \
-xfonts-scalable imagemagick x11-apps
+apt install -y blackfire-agent blackfire-php
 
 # Install Memcached & Beanstalk
 
-apt-get install -y redis-server memcached beanstalkd
+apt install -y redis-server memcached beanstalkd
 
 # Configure Beanstalkd
 
@@ -298,13 +272,13 @@ sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 wget --quiet -O /usr/local/bin/mailhog https://github.com/mailhog/MailHog/releases/download/v0.2.1/MailHog_linux_amd64
 chmod +x /usr/local/bin/mailhog
 
-sudo tee /etc/systemd/system/mailhog.service <<EOL
+sudo tee /etc/systemd/system/mailhog.service <<'EOL'
 [Unit]
 Description=Mailhog
 After=network.target
 
 [Service]
-User=vagrant
+User=$(logname)
 ExecStart=/usr/bin/env /usr/local/bin/mailhog > /dev/null 2>&1 &
 
 [Install]
@@ -331,13 +305,13 @@ curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.pha
 chmod +x wp-cli.phar
 mv wp-cli.phar /usr/local/bin/wp
 
-apt-get -y upgrade
+apt -y upgrade
 
 # Clean Up
 
-apt-get -y autoremove
-apt-get -y clean
+apt -y autoremove
+apt -y clean
 
 # Add Composer Global Bin To Path
 
-printf "\nPATH=\"$(sudo su - vagrant -c 'composer config -g home 2>/dev/null')/vendor/bin:\$PATH\"\n" | tee -a /home/$USER/.profile
+printf "\nPATH=\"$(sudo su - $(logname) -c 'composer config -g home 2>/dev/null')/vendor/bin:\$PATH\"\n" | tee -a $HOME/.profile
