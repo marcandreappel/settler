@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Install Some PPAs
-
 apt install -y software-properties-common curl
 
 apt-add-repository ppa:nginx/development -y
@@ -15,14 +14,10 @@ echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.l
 apt update
 
 # Install Some Basic Packages
-
 apt install -y build-essential dos2unix gcc git libmcrypt4 libpcre3-dev libpng-dev ntp unzip \
 make python2.7-dev python-pip re2c supervisor unattended-upgrades whois libnotify-bin \
 pv cifs-utils mcrypt graphviz avahi-daemon
 
-# Set My Timezone
-
-# Install PHP Stuffs
 # Current PHP
 apt install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
 php7.3-cli php7.3-dev \
@@ -59,7 +54,7 @@ update-alternatives --set phpize /usr/bin/phpize7.3
 curl -sS https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
-# Install Laravel Envoy, Installer, and prestissimo for parallel downloads
+# Install Prestissimo for parallel downloads
 
 sudo su $(logname) <<'EOF'
 /usr/local/bin/composer global require hirak/prestissimo
@@ -184,12 +179,14 @@ EOF
 
 # Set The Nginx & PHP-FPM User
 
-sed -i "s/user www-data;/user $SUDO_USER;/" /etc/nginx/nginx.conf
-sed -i "s/user root;/user $SUDO_USER;/" /etc/nginx/nginx.conf
+sed -i "s/user www-data;/user $(logname);/" /etc/nginx/nginx.conf
+sed -i "s/user root;/user $(logname);/" /etc/nginx/nginx.conf
 sed -i "s/# server_names_hash_bucket_size.*/server_names_hash_bucket_size 64;/" /etc/nginx/nginx.conf
 
 sed -i "s/user = www-data/user = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/group = www-data/group = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/user = root/user = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
+sed -i "s/group = root/group = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
 
 sed -i "s/listen\.owner.*/listen.owner = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/listen\.group.*/listen.group = $(logname)/" /etc/php/7.3/fpm/pool.d/www.conf
@@ -197,6 +194,8 @@ sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.3/fpm/pool.d/www.conf
 
 sed -i "s/user = www-data/user = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
 sed -i "s/group = www-data/group = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/user = root/user = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
+sed -i "s/group = root/group = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
 
 sed -i "s/listen\.owner.*/listen.owner = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
 sed -i "s/listen\.group.*/listen.group = $(logname)/" /etc/php/7.2/fpm/pool.d/www.conf
@@ -204,6 +203,8 @@ sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.2/fpm/pool.d/www.conf
 
 sed -i "s/user = www-data/user = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
 sed -i "s/group = www-data/group = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/user = root/user = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
+sed -i "s/group = root/group = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
 
 sed -i "s/listen\.owner.*/listen.owner = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
 sed -i "s/listen\.group.*/listen.group = $(logname)/" /etc/php/7.1/fpm/pool.d/www.conf
@@ -269,24 +270,24 @@ sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 
 # Install & Configure MailHog
 
-wget --quiet -O /usr/local/bin/mailhog https://github.com/mailhog/MailHog/releases/download/v0.2.1/MailHog_linux_amd64
-chmod +x /usr/local/bin/mailhog
+# wget --quiet -O /usr/local/bin/mailhog https://github.com/mailhog/MailHog/releases/download/v0.2.1/MailHog_linux_amd64
+# chmod +x /usr/local/bin/mailhog
 
-sudo tee /etc/systemd/system/mailhog.service <<'EOL'
-[Unit]
-Description=Mailhog
-After=network.target
+# sudo tee /etc/systemd/system/mailhog.service <<'EOL'
+# [Unit]
+# Description=Mailhog
+# After=network.target
 
-[Service]
-User=$(logname)
-ExecStart=/usr/bin/env /usr/local/bin/mailhog > /dev/null 2>&1 &
+# [Service]
+# User=$(logname)
+# ExecStart=/usr/bin/env /usr/local/bin/mailhog > /dev/null 2>&1 &
 
-[Install]
-WantedBy=multi-user.target
-EOL
+# [Install]
+# WantedBy=multi-user.target
+# EOL
 
-systemctl daemon-reload
-systemctl enable mailhog
+# systemctl daemon-reload
+# systemctl enable mailhog
 
 # Configure Supervisor
 
@@ -295,17 +296,15 @@ service supervisor start
 
 # Install ngrok
 
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-unzip ngrok-stable-linux-amd64.zip -d /usr/local/bin
-rm -rf ngrok-stable-linux-amd64.zip
+#wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+#unzip ngrok-stable-linux-amd64.zip -d /usr/local/bin
+#rm -rf ngrok-stable-linux-amd64.zip
 
 # Install wp-cli
 
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-chmod +x wp-cli.phar
-mv wp-cli.phar /usr/local/bin/wp
-
-apt -y upgrade
+#curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+#chmod +x wp-cli.phar
+#mv wp-cli.phar /usr/local/bin/wp
 
 # Clean Up
 
@@ -314,4 +313,5 @@ apt -y clean
 
 # Add Composer Global Bin To Path
 
-printf "\nPATH=\"$(sudo su - $(logname) -c 'composer config -g home 2>/dev/null')/vendor/bin:\$PATH\"\n" | tee -a $HOME/.profile
+#printf "\nPATH=\"$(sudo su - $(logname) -c 'composer config -g home 2>/dev/null')/vendor/bin:\$PATH\"\n" | tee -a $HOME/.profile
+
